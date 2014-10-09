@@ -17,11 +17,11 @@
     "q": "^1.0.1"
   },
   "peerDependencies": {
-    "awesome-module": "dready92/awesome-module"
+    "awesome-module": "git+https://ci.open-paas.org/stash/scm/~mbailly/awesome-module.git"
   },
   "devDependencies": {
     "mocha": "^1.21.4",
-    "awesome-module": "dready92/awesome-module"
+    "awesome-module": "git+https://ci.open-paas.org/stash/scm/~mbailly/awesome-module.git"
   },
   "scripts": {
     "test": "grunt test"
