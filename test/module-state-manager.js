@@ -21,7 +21,7 @@ describe('The AwesomeModuleStateManager module', function() {
       }
     });
     this.mstore.set('module1', m);
-    this.amsm.fire('lib', m);
+    this.amsm.fire('lib', m).done();
   });
 
   it('should reject if the module state throw an error', function(done) {
@@ -32,11 +32,10 @@ describe('The AwesomeModuleStateManager module', function() {
       }
     });
     this.mstore.set('module1', m);
-    var p = this.amsm.fire('lib', m);
-    p.then(done, function(err) {
+    this.amsm.fire('lib', m).then(done, function(err) {
       expect(err.message).to.equal('It does not load');
       done();
-    });
+    }).done();
   });
 
   it('should fulfill if the module state is achieved', function(done) {
@@ -49,7 +48,7 @@ describe('The AwesomeModuleStateManager module', function() {
     this.mstore.set('module1', m);
     this.amsm.fire('lib', m).then(function() {
       done();
-    }, done);
+    }, done).done();
   });
 
   describe('module dependencies', function() {
@@ -74,7 +73,7 @@ describe('The AwesomeModuleStateManager module', function() {
       this.mstore.set('module2', m2);
       this.amsm.fire('lib', m).then(function() {
         done();
-      }, done);
+      }, done).done();
     });
 
     it('should fail if a dependency fails', function(done) {
@@ -98,7 +97,7 @@ describe('The AwesomeModuleStateManager module', function() {
       this.mstore.set('module2', m2);
       this.amsm.fire('lib', m).then(done, function() {
         done();
-      });
+      }).done();
     });
 
     it('should expose the dependency API', function(done) {
@@ -124,7 +123,7 @@ describe('The AwesomeModuleStateManager module', function() {
 
       this.mstore.set('module1', m);
       this.mstore.set('module2', m2);
-      this.amsm.fire('lib', m);
+      this.amsm.fire('lib', m).done();
     });
 
     it('should expose the dependency API, respecting the alias', function(done) {
@@ -150,7 +149,7 @@ describe('The AwesomeModuleStateManager module', function() {
 
       this.mstore.set('module1', m);
       this.mstore.set('module2', m2);
-      this.amsm.fire('lib', m);
+      this.amsm.fire('lib', m).done();
     });
 
   });
@@ -188,7 +187,7 @@ describe('The AwesomeModuleStateManager module', function() {
           return done(e);
         }
         done();
-      });
+      }).done();
     });
 
     it('should fail if any dependant state fails', function(done) {
@@ -213,7 +212,7 @@ describe('The AwesomeModuleStateManager module', function() {
       this.mstore.set('module1', m);
       this.amsm.fire('state2', m).then(done, function() {
         done();
-      });
+      }).done();
     });
 
     it('should fail if any dependant state throws an error', function(done) {
@@ -238,7 +237,7 @@ describe('The AwesomeModuleStateManager module', function() {
       this.mstore.set('module1', m);
       this.amsm.fire('state2', m).then(done, function() {
         done();
-      });
+      }).done();
     });
 
     it('should start any dependant state on dependencies', function(done) {
@@ -270,9 +269,43 @@ describe('The AwesomeModuleStateManager module', function() {
 
       this.mstore.set('module1', m);
       this.mstore.set('module2', m2);
-      this.amsm.fire('state2', m);
+      this.amsm.fire('state2', m).done();
     });
+  });
 
+  describe('state context', function() {
+    it('should be set to null in the "lib" state', function(done) {
+      var AwesomeModule = require('awesome-module');
+      var m = new AwesomeModule('module1', {
+        lib: function(modules, callback) {
+          expect(this).to.be.null;
+          done();
+        }
+      });
+      this.mstore.set('module1', m);
+      this.amsm.fire('lib', m).done();
+    });
+    it('should be set to the module lib in any other state', function(done) {
+      var AwesomeModule = require('awesome-module');
+      var AwesomeState = require(libPath + '/state');
+      var state1 = new AwesomeState('state1', ['lib']);
+      this.amsm.stateStore.add(state1);
+      var m = new AwesomeModule('module1', {
+        lib: function(modules, callback) {
+          callback(null, {
+            iAmTheLib: true,
+            iAmAMethod: function() {}
+          });
+        },
+        state1: function(modules, callback) {
+          expect(this.iAmTheLib).to.be.true;
+          expect(this.iAmAMethod).to.be.a('function');
+          done();
+        }
+      });
+      this.mstore.set('module1', m);
+      this.amsm.fire('state1', m).done();
+    });
   });
 
   describe('events', function() {
@@ -309,7 +342,7 @@ describe('The AwesomeModuleStateManager module', function() {
         } catch (e) {
           done(e);
         }
-      }, done);
+      }, done).done();
     });
 
     it('should emit a "fulfilled" event when a new state is achieved', function(done) {
@@ -345,7 +378,7 @@ describe('The AwesomeModuleStateManager module', function() {
         } catch (e) {
           done(e);
         }
-      }, done);
+      }, done).done();
     });
 
     it('should emit a "failed" event when a new state can\'t be achieved', function(done) {
