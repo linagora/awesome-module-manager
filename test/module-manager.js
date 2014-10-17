@@ -24,37 +24,50 @@ describe('The AwesomeModuleStateManager module', function() {
       var AwesomeModuleManager = require(libPath + '/module-manager');
       var amm = new AwesomeModuleManager();
       expect(amm).to.have.property('appendLoader');
-      expect(amm.appendLoader).to.be.a.function;
+      expect(amm.appendLoader).to.be.a('function');
     });
 
     it('should have a load method', function() {
       var AwesomeModuleManager = require(libPath + '/module-manager');
       var amm = new AwesomeModuleManager();
       expect(amm).to.have.property('load');
-      expect(amm.load).to.be.a.function;
+      expect(amm.load).to.be.a('function');
     });
 
     it('should have a fire method', function() {
       var AwesomeModuleManager = require(libPath + '/module-manager');
       var amm = new AwesomeModuleManager();
       expect(amm).to.have.property('fire');
-      expect(amm.fire).to.be.a.function;
+      expect(amm.fire).to.be.a('function');
     });
 
     it('should have a on method', function() {
       var AwesomeModuleManager = require(libPath + '/module-manager');
       var amm = new AwesomeModuleManager();
       expect(amm).to.have.property('on');
-      expect(amm.on).to.be.a.function;
+      expect(amm.on).to.be.a('function');
     });
 
     it('should have a once method', function() {
       var AwesomeModuleManager = require(libPath + '/module-manager');
       var amm = new AwesomeModuleManager();
       expect(amm).to.have.property('once');
-      expect(amm.once).to.be.a.function;
+      expect(amm.once).to.be.a('function');
     });
 
+    it('should have a registerState method', function() {
+      var AwesomeModuleManager = require(libPath + '/module-manager');
+      var amm = new AwesomeModuleManager();
+      expect(amm).to.have.property('registerState');
+      expect(amm.registerState).to.be.a('function');
+    });
+
+    it('should have a registerModule method', function() {
+      var AwesomeModuleManager = require(libPath + '/module-manager');
+      var amm = new AwesomeModuleManager();
+      expect(amm).to.have.property('registerModule');
+      expect(amm.registerModule).to.be.a('function');
+    });
   });
 
   describe('load method', function() {
