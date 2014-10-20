@@ -6,6 +6,10 @@
   "directories": {
     "test": "test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://ci.open-paas.org/stash/scm/am/awesome-module-manager.git"
+  },
   "dependencies": {
     "chai": "^1.9.1",
     "closure-linter-wrapper": "^0.2.9",
