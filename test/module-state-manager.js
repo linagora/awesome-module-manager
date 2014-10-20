@@ -152,6 +152,88 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.fire('lib', m).done();
     });
 
+    describe('dynamic dependencies', function() {
+      it('should resolve the dependency by name, when it is available', function(done) {
+        var AwesomeModule = require('awesome-module');
+        var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
+        var module1lib = {};
+        var m = new AwesomeModule('module1', {
+          lib: function(modules, callback) {
+            module1lib.modules = modules;
+            callback(null, module1lib);
+          },
+          dependencies: [
+            new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module2', 'module2', true)
+          ]
+        });
+        var m2 = new AwesomeModule('module2', {
+          lib: function(modules, callback) {
+            callback(null, {
+              itisthelib: true
+            });
+          }
+        });
+
+        this.mstore.set('module1', m);
+        this.amsm.fire('lib', m).then(
+          function() {
+            expect(module1lib.modules('module2')).to.be.null;
+            this.mstore.set('module2', m2);
+            this.amsm.fire('lib', m2).then(
+              function() {
+                expect(module1lib.modules('module2')).to.be.an('object');
+                expect(module1lib.modules('module2')).to.have.property('itisthelib');
+                expect(module1lib.modules('module2').itisthelib).to.be.true;
+                done();
+              }, done
+            ).done();
+
+          }.bind(this), done
+        ).done();
+
+      });
+      it('should resolve the dependency by ability, when it is available', function(done) {
+        var AwesomeModule = require('awesome-module');
+        var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
+        var module1lib = {};
+        var m = new AwesomeModule('module1', {
+          lib: function(modules, callback) {
+            module1lib.modules = modules;
+            callback(null, module1lib);
+          },
+          dependencies: [
+            new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_ABILITY, 'ability1', 'ability1', true)
+          ]
+        });
+        var m2 = new AwesomeModule('module2', {
+          lib: function(modules, callback) {
+            callback(null, {
+              itisthelib: true
+            });
+          },
+          abilities: ['ability1']
+        });
+
+        this.mstore.set('module1', m);
+        this.amsm.fire('lib', m).then(
+          function() {
+            expect(module1lib.modules('ability1')).to.be.null;
+            this.mstore.set('module2', m2);
+            this.amsm.fire('lib', m2).then(
+              function() {
+                expect(module1lib.modules('ability1')).to.be.an('object');
+                expect(module1lib.modules('ability1')).to.have.property('itisthelib');
+                expect(module1lib.modules('ability1').itisthelib).to.be.true;
+                done();
+              }, done
+            ).done();
+
+          }.bind(this), done
+        ).done();
+
+      });
+
+    });
   });
 
   describe('states dependencies', function() {
