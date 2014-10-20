@@ -134,7 +134,7 @@ Modules can tell the abilities they provide:
 
 ```javascript
 var someModule = new AwesomeModule('some.name', {
-  provides: ['interface.logger'],
+  abilities: ['interface.logger'],
   ...
 });
 ```
