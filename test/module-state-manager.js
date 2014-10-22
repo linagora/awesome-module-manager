@@ -492,5 +492,294 @@ describe('The AwesomeModuleStateManager module', function() {
     });
 
   });
+  describe('states callbacks', function() {
+    describe('dependencies by name', function() {
+      beforeEach(function() {
+        var steps = this.steps = [];
+        var stateCallback = function(deps, callback) { steps.push('module2:callback'); callback(); };
+        this.setStateCallback = function(cb) { stateCallback = cb; };
+        var AwesomeModule = require('awesome-module'),
+        AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
+        var dependency = new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module1', 'module1', true);
+        dependency.on('lib', function(deps, callback) { stateCallback.call(this, deps, callback); });
+        this.m = new AwesomeModule('module1', {
+          lib: function(modules, callback) { steps.push('module1:lib'); callback(null, {itisthelib: true}); }
+        });
+        this.m2 = new AwesomeModule('module2', {
+          lib: function(modules, callback) { steps.push('module2:lib'); callback(null, {itisthelib2: true}); },
+          dependencies: [dependency]
+        });
+      });
+      describe('when dependency is loaded after the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', this.m);
+          this.mstore.set('module2', this.m2);
+          amsm.fire('lib', self.m).then(function() {
+            amsm.fire('lib', self.m2).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module1:lib module2:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', this.m);
+          this.mstore.set('module2', this.m2);
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('module1')).to.be.an('object');
+            expect(deps('module1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          amsm.fire('lib', self.m).then(function() {
+            amsm.fire('lib', self.m2).done();
+          },done).done();
+        });
+      });
+      describe('when dependency is loaded before the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', self.m);
+          this.mstore.set('module2', self.m2);
+          amsm.fire('lib', self.m2).then(function() {
+            amsm.fire('lib', self.m).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module1:lib module2:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', this.m);
+          this.mstore.set('module2', this.m2);
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('module1')).to.be.an('object');
+            expect(deps('module1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          amsm.fire('lib', self.m2).then(function() {
+            amsm.fire('lib', self.m).done();
+          },done).done();
+        });
 
+      });
+      describe('when dependency is known before the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module2', self.m2);
+          amsm.fire('lib', self.m2).then(function() {
+            self.mstore.set('module1', self.m);
+            amsm.fire('lib', self.m).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module2:lib module1:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('module1')).to.be.an('object');
+            expect(deps('module1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          this.mstore.set('module2', self.m2);
+          amsm.fire('lib', self.m2).then(function() {
+            self.mstore.set('module1', self.m);
+            amsm.fire('lib', self.m).done();
+          },done).done();
+        });
+      });
+      describe('when dependency is known after the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          self.mstore.set('module1', self.m);
+          amsm.fire('lib', self.m).then(function() {
+            self.mstore.set('module2', self.m2);
+            amsm.fire('lib', self.m2).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module1:lib module2:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('module1')).to.be.an('object');
+            expect(deps('module1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          self.mstore.set('module1', self.m);
+          amsm.fire('lib', self.m).then(function() {
+            self.mstore.set('module2', self.m2);
+            amsm.fire('lib', self.m2).done();
+          },done).done();
+        });
+      });
+    });
+
+    describe('dependencies by ability', function() {
+      beforeEach(function() {
+        var steps = this.steps = [];
+        var stateCallback = function(deps, callback) { console.log('callback called'); steps.push('module2:callback'); callback(); };
+        this.setStateCallback = function(cb) { stateCallback = cb; };
+        var AwesomeModule = require('awesome-module'),
+        AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
+        var dependency = new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_ABILITY, 'esn.ability1', 'ability1', true);
+        dependency.on('lib', function(deps, callback) { stateCallback.call(this, deps, callback); });
+        this.m = new AwesomeModule('module1', {
+          lib: function(modules, callback) { steps.push('module1:lib'); callback(null, {itisthelib: true}); },
+          abilities: ['esn.ability1']
+        });
+        this.m2 = new AwesomeModule('module2', {
+          lib: function(modules, callback) { steps.push('module2:lib'); callback(null, {itisthelib2: true}); },
+          dependencies: [dependency]
+        });
+      });
+      describe('when dependency is loaded after the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', this.m);
+          this.mstore.set('module2', this.m2);
+          amsm.fire('lib', self.m).then(function() {
+            amsm.fire('lib', self.m2).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module1:lib module2:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', this.m);
+          this.mstore.set('module2', this.m2);
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('ability1')).to.be.an('object');
+            expect(deps('ability1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          amsm.fire('lib', self.m).then(function() {
+            amsm.fire('lib', self.m2).done();
+          },done).done();
+        });
+      });
+      describe('when dependency is loaded before the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', self.m);
+          this.mstore.set('module2', self.m2);
+          amsm.fire('lib', self.m2).then(function() {
+            amsm.fire('lib', self.m).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module1:lib module2:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module1', this.m);
+          this.mstore.set('module2', this.m2);
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('ability1')).to.be.an('object');
+            expect(deps('ability1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          amsm.fire('lib', self.m2).then(function() {
+            amsm.fire('lib', self.m).done();
+          },done).done();
+        });
+
+      });
+      describe('when dependency is known before the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.mstore.set('module2', self.m2);
+          amsm.fire('lib', self.m2).then(function() {
+            self.mstore.set('module1', self.m);
+            amsm.fire('lib', self.m).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module2:lib module1:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('ability1')).to.be.an('object');
+            expect(deps('ability1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          this.mstore.set('module2', self.m2);
+          amsm.fire('lib', self.m2).then(function() {
+            self.mstore.set('module1', self.m);
+            amsm.fire('lib', self.m).done();
+          },done).done();
+        });
+      });
+      describe('when dependency is known after the dependent', function() {
+        it('should fire the state callback', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          self.mstore.set('module1', self.m);
+          amsm.fire('lib', self.m).then(function() {
+            self.mstore.set('module2', self.m2);
+            amsm.fire('lib', self.m2).then(function() {
+              expect(self.steps).to.have.length(3);
+              expect(self.steps.join(' ')).to.equal('module1:lib module2:lib module2:callback');
+              done();
+            },done).done();
+          },done).done();
+        });
+        it('should have the correct "this" and dependency proxy', function(done) {
+          var self = this;
+          var amsm = this.amsm;
+          this.setStateCallback(function(deps, callback) {
+            expect(this).to.have.property('itisthelib2');
+            expect(deps('ability1')).to.be.an('object');
+            expect(deps('ability1')).to.have.property('itisthelib');
+            callback();
+            done();
+          });
+          self.mstore.set('module1', self.m);
+          amsm.fire('lib', self.m).then(function() {
+            self.mstore.set('module2', self.m2);
+            amsm.fire('lib', self.m2).done();
+          },done).done();
+        });
+      });
+    });
+  });
 });
