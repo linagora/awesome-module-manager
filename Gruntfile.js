@@ -34,11 +34,20 @@ module.exports = function(grunt) {
     all: {
       src: '<%= jshint.files %>'
     }
+  },
+  mochacli: {
+    options: {
+      reporter: 'spec'
+    },
+    all: ['test/*.js']
   }
   });
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-gjslint');
+  grunt.loadNpmTasks('grunt-mocha-cli');
 
   grunt.registerTask('linters', ['jshint', 'gjslint']);
+  grunt.registerTask('mocha', ['mochacli']);
+  grunt.registerTask('test', ['mochacli', 'linters']);
   grunt.registerTask('fixjsstyle', ['fixjsstyle']);
 };
