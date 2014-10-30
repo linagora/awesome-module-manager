@@ -117,11 +117,11 @@ manager.fire('datastore_connect', 'datastore.mongo');
 
 ### dependencies niceties
 
-#### optionnal dependencies
+#### optional dependencies
 
-A module can optionnaly require a dependency
+A module can optionally require a dependency
 
-    new Dependency(Dependency.TYPE_NAME, 'basic.config', 'conf', false)
+    new Dependency(Dependency.TYPE_NAME, 'basic.config', 'conf', true)
 
 The injected dependencies('conf') may or may not contain the conf object.
 
@@ -148,6 +148,83 @@ var otherModule = new AwesomeModule('other.name', {
   ...
 });
 ```
+
+### Dependency callback
+
+A module can sepcify that it wants a callback to be fired when a dependency is fulfilled and both the module and its dependency reach a certain state.
+
+```javascript
+var AMD = AwesomeModule.AwesomeModuleDependency;
+var exampleModule = new AwesomeModule('example', {
+  lib: function(dependencies, callback) {
+    console.log('example module lib');
+    return callback(null, {foo: function(){}});
+  }
+  start: function(dependencies, callback) {
+    console.log('example module start');
+    return callback();
+  }
+});
+
+var dependency = new AMD(AMD.TYPE_NAME, 'example', 'example', true);
+dependency.on('start', function(deps, callback){
+  console.log('dependent module start callback');
+  deps('example').foo();
+});
+
+var dependentModule = new AwesomeModule('dependent', {
+  lib: function(dependencies, callback) {
+    console.log('dependent module lib')
+    return callback(null, {bar: function(){}});
+  },
+  start: function(dependencies, callback) {
+    console.log('dependent module start')
+    return callback();
+  },
+  dependencies: [dependency]
+});
+
+var manager = new AwesomeModuleManager();
+manager.registerState('start', ['lib']);
+
+
+manager.registerModule(exampleModule);
+manager.fire('start', 'example');
+manager.registerModule(dependentModule);
+manager.fire('start', 'dependant');
+```
+
+will echo
+
+```
+example module lib
+example module start
+dependent module lib
+dependent module start
+dependent module start callback
+```
+
+Now, the same code, but with a different loading order, will also work:
+```javascript
+var manager = new AwesomeModuleManager();
+manager.registerState('start', ['lib']);
+
+manager.registerModule(dependentModule);
+manager.fire('start', 'dependant');
+manager.registerModule(exampleModule);
+manager.fire('start', 'example');
+```
+
+will echo
+
+```
+dependent module lib
+dependent module start
+example module lib
+example module start
+dependent module start callback
+```
+
 
 ## Module loaders
 
@@ -176,3 +253,15 @@ mm.fire('test.module', 'lib');
 ```
 
 The module manager loaders are middleware : they are called in order, until one of them find the module.
+
+## events
+
+An AwesomeModuleManager is also an event emitter.
+
+Here is the list of emitted events:
+
+| Event  | Associated data  | Description  |
+|---|---|---|
+|   |   |   |
+|   |   |   |
+|   |   |   |

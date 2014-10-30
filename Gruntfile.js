@@ -10,35 +10,44 @@ module.exports = function(grunt) {
       }
     },
     gjslint: {
-    options: {
-      flags: [
-        '--disable 0110 --nojsdoc'
-      ],
-      reporter: {
-        name: 'console'
+      options: {
+        flags: [
+          '--disable 0110 --nojsdoc'
+        ],
+        reporter: {
+          name: 'console'
+        }
+      },
+      all: {
+        src: '<%= jshint.files %>'
       }
     },
-    all: {
-      src: '<%= jshint.files %>'
-    }
-  },
-  fixjstyle: {
-    options: {
-      flags: [
-        '--disable 0110'
-      ],
-      reporter: {
-        name: 'console'
+    fixjstyle: {
+      options: {
+        flags: [
+          '--disable 0110'
+        ],
+        reporter: {
+          name: 'console'
+        }
+      },
+      all: {
+        src: '<%= jshint.files %>'
       }
     },
-    all: {
-      src: '<%= jshint.files %>'
+    mochacli: {
+      options: {
+        reporter: 'spec'
+      },
+      all: ['test/*.js']
     }
-  }
   });
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-gjslint');
+  grunt.loadNpmTasks('grunt-mocha-cli');
 
   grunt.registerTask('linters', ['jshint', 'gjslint']);
+  grunt.registerTask('mocha', ['mochacli']);
+  grunt.registerTask('test', ['mochacli', 'linters']);
   grunt.registerTask('fixjsstyle', ['fixjsstyle']);
 };

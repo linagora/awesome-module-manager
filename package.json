@@ -24,8 +24,9 @@
     "awesome-module": "0.1.0"
   },
   "devDependencies": {
-    "mocha": "^1.21.4",
-    "awesome-module": "0.1.0"
+    "awesome-module": "0.1.0",
+    "grunt-mocha-cli": "^1.10.0",
+    "mocha": "^1.21.4"
   },
   "scripts": {
     "test": "grunt test"
