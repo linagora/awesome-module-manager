@@ -16,8 +16,10 @@ describe('The AwesomeModuleStateManager module', function() {
   it('should fire the module state handler', function(done) {
     var AwesomeModule = require('awesome-module');
     var m = new AwesomeModule('module1', {
-      lib: function(modules, callback) {
-        done();
+      states: {
+        lib: function(modules, callback) {
+          done();
+        }
       }
     });
     this.mstore.set('module1', m);
@@ -27,8 +29,10 @@ describe('The AwesomeModuleStateManager module', function() {
   it('should reject if the module state throw an error', function(done) {
     var AwesomeModule = require('awesome-module');
     var m = new AwesomeModule('module1', {
-      lib: function(modules, callback) {
-        throw new Error('It does not load');
+      states: {
+        lib: function(modules, callback) {
+          throw new Error('It does not load');
+        }
       }
     });
     this.mstore.set('module1', m);
@@ -41,8 +45,10 @@ describe('The AwesomeModuleStateManager module', function() {
   it('should fulfill if the module state is achieved', function(done) {
     var AwesomeModule = require('awesome-module');
     var m = new AwesomeModule('module1', {
-      lib: function(modules, callback) {
-        callback(null, {});
+      states: {
+        lib: function(modules, callback) {
+          callback(null, {});
+        }
       }
     });
     this.mstore.set('module1', m);
@@ -56,16 +62,20 @@ describe('The AwesomeModuleStateManager module', function() {
       var AwesomeModule = require('awesome-module');
       var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {});
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {});
+          }
         },
         dependencies: [
           new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module2', 'module2')
         ]
       });
       var m2 = new AwesomeModule('module2', {
-        lib: function(modules, callback) {
-          callback(null, {});
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {});
+          }
         }
       });
 
@@ -80,16 +90,20 @@ describe('The AwesomeModuleStateManager module', function() {
       var AwesomeModule = require('awesome-module');
       var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {});
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {});
+          }
         },
         dependencies: [
           new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module2', 'module2')
         ]
       });
       var m2 = new AwesomeModule('module2', {
-        lib: function(modules, callback) {
-          throw new Error('Dead');
+        states: {
+          lib: function(modules, callback) {
+            throw new Error('Dead');
+          }
         }
       });
 
@@ -104,20 +118,24 @@ describe('The AwesomeModuleStateManager module', function() {
       var AwesomeModule = require('awesome-module');
       var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          var module2 = modules('module2');
-          expect(module2.itisthelib).to.be.true;
-          done();
+        states: {
+          lib: function(modules, callback) {
+            var module2 = modules('module2');
+            expect(module2.itisthelib).to.be.true;
+            done();
+          }
         },
         dependencies: [
           new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module2', 'module2')
         ]
       });
       var m2 = new AwesomeModule('module2', {
-        lib: function(modules, callback) {
-          callback(null, {
-            itisthelib: true
-          });
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {
+              itisthelib: true
+            });
+          }
         }
       });
 
@@ -130,20 +148,24 @@ describe('The AwesomeModuleStateManager module', function() {
       var AwesomeModule = require('awesome-module');
       var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          var module2 = modules('alias1');
-          expect(module2.itisthelib).to.be.true;
-          done();
+        states: {
+          lib: function(modules, callback) {
+            var module2 = modules('alias1');
+            expect(module2.itisthelib).to.be.true;
+            done();
+          }
         },
         dependencies: [
           new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module2', 'alias1')
         ]
       });
       var m2 = new AwesomeModule('module2', {
-        lib: function(modules, callback) {
-          callback(null, {
-            itisthelib: true
-          });
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {
+              itisthelib: true
+            });
+          }
         }
       });
 
@@ -158,19 +180,23 @@ describe('The AwesomeModuleStateManager module', function() {
         var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
         var module1lib = {};
         var m = new AwesomeModule('module1', {
-          lib: function(modules, callback) {
-            module1lib.modules = modules;
-            callback(null, module1lib);
+          states: {
+            lib: function(modules, callback) {
+              module1lib.modules = modules;
+              callback(null, module1lib);
+            }
           },
           dependencies: [
             new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module2', 'module2', true)
           ]
         });
         var m2 = new AwesomeModule('module2', {
-          lib: function(modules, callback) {
-            callback(null, {
-              itisthelib: true
-            });
+          states: {
+            lib: function(modules, callback) {
+              callback(null, {
+                itisthelib: true
+              });
+            }
           }
         });
 
@@ -197,19 +223,23 @@ describe('The AwesomeModuleStateManager module', function() {
         var AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
         var module1lib = {};
         var m = new AwesomeModule('module1', {
-          lib: function(modules, callback) {
-            module1lib.modules = modules;
-            callback(null, module1lib);
+          states: {
+            lib: function(modules, callback) {
+              module1lib.modules = modules;
+              callback(null, module1lib);
+            }
           },
           dependencies: [
             new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_ABILITY, 'ability1', 'ability1', true)
           ]
         });
         var m2 = new AwesomeModule('module2', {
-          lib: function(modules, callback) {
-            callback(null, {
-              itisthelib: true
-            });
+          states: {
+            lib: function(modules, callback) {
+              callback(null, {
+                itisthelib: true
+              });
+            }
           },
           abilities: ['ability1']
         });
@@ -247,17 +277,19 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.stateStore.add(state2);
       var counter = '';
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          counter += 'lib';
-          callback(null, {itisthelib: true});
-        },
-        state1: function(modules, callback) {
-          counter += 'state1';
-          callback();
-        },
-        state2: function(modules, callback) {
-          counter += 'state2';
-          callback();
+        states: {
+          lib: function(modules, callback) {
+            counter += 'lib';
+            callback(null, {itisthelib: true});
+          },
+          state1: function(modules, callback) {
+            counter += 'state1';
+            callback();
+          },
+          state2: function(modules, callback) {
+            counter += 'state2';
+            callback();
+          }
         }
       });
 
@@ -280,14 +312,16 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.stateStore.add(state1);
       this.amsm.stateStore.add(state2);
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {itisthelib: true});
-        },
-        state1: function(modules, callback) {
-          callback(new Error('failed'));
-        },
-        state2: function(modules, callback) {
-          callback();
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {itisthelib: true});
+          },
+          state1: function(modules, callback) {
+            callback(new Error('failed'));
+          },
+          state2: function(modules, callback) {
+            callback();
+          }
         }
       });
 
@@ -305,14 +339,16 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.stateStore.add(state1);
       this.amsm.stateStore.add(state2);
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {itisthelib: true});
-        },
-        state1: function(modules, callback) {
-          throw new Error('failed');
-        },
-        state2: function(modules, callback) {
-          callback();
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {itisthelib: true});
+          },
+          state1: function(modules, callback) {
+            throw new Error('failed');
+          },
+          state2: function(modules, callback) {
+            callback();
+          }
         }
       });
 
@@ -331,21 +367,25 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.stateStore.add(state1);
       this.amsm.stateStore.add(state2);
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {});
-        },
-        state1: function(modules, callback) {
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {});
+          },
+          state1: function(modules, callback) {
+          }
         },
         dependencies: [
           new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module2', 'module2')
         ]
       });
       var m2 = new AwesomeModule('module2', {
-        lib: function(modules, callback) {
-          callback(null, {itisthelib: true});
-        },
-        state1: function(modules, callback) {
-          done();
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {itisthelib: true});
+          },
+          state1: function(modules, callback) {
+            done();
+          }
         }
       });
 
@@ -359,9 +399,11 @@ describe('The AwesomeModuleStateManager module', function() {
     it('should be set to null in the "lib" state', function(done) {
       var AwesomeModule = require('awesome-module');
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          expect(this).to.be.null;
-          done();
+        states: {
+          lib: function(modules, callback) {
+            expect(this).to.be.null;
+            done();
+          }
         }
       });
       this.mstore.set('module1', m);
@@ -373,16 +415,18 @@ describe('The AwesomeModuleStateManager module', function() {
       var state1 = new AwesomeState('state1', ['lib']);
       this.amsm.stateStore.add(state1);
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {
-            iAmTheLib: true,
-            iAmAMethod: function() {}
-          });
-        },
-        state1: function(modules, callback) {
-          expect(this.iAmTheLib).to.be.true;
-          expect(this.iAmAMethod).to.be.a('function');
-          done();
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {
+              iAmTheLib: true,
+              iAmAMethod: function() {}
+            });
+          },
+          state1: function(modules, callback) {
+            expect(this.iAmTheLib).to.be.true;
+            expect(this.iAmAMethod).to.be.a('function');
+            done();
+          }
         }
       });
       this.mstore.set('module1', m);
@@ -400,14 +444,16 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.stateStore.add(state1);
       this.amsm.stateStore.add(state2);
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {itisthelib: true});
-        },
-        state1: function(modules, callback) {
-          callback();
-        },
-        state2: function(modules, callback) {
-          callback();
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {itisthelib: true});
+          },
+          state1: function(modules, callback) {
+            callback();
+          },
+          state2: function(modules, callback) {
+            callback();
+          }
         }
       });
 
@@ -436,14 +482,16 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.stateStore.add(state1);
       this.amsm.stateStore.add(state2);
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {itisthelib: true});
-        },
-        state1: function(modules, callback) {
-          callback();
-        },
-        state2: function(modules, callback) {
-          callback();
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {itisthelib: true});
+          },
+          state1: function(modules, callback) {
+            callback();
+          },
+          state2: function(modules, callback) {
+            callback();
+          }
         }
       });
 
@@ -471,14 +519,16 @@ describe('The AwesomeModuleStateManager module', function() {
       this.amsm.stateStore.add(state1);
       this.amsm.stateStore.add(state2);
       var m = new AwesomeModule('module1', {
-        lib: function(modules, callback) {
-          callback(null, {itisthelib: true});
-        },
-        state1: function(modules, callback) {
-          throw new Error('err');
-        },
-        state2: function(modules, callback) {
-          callback();
+        states: {
+          lib: function(modules, callback) {
+            callback(null, {itisthelib: true});
+          },
+          state1: function(modules, callback) {
+            throw new Error('err');
+          },
+          state2: function(modules, callback) {
+            callback();
+          }
         }
       });
 
@@ -503,10 +553,14 @@ describe('The AwesomeModuleStateManager module', function() {
         var dependency = new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_NAME, 'module1', 'module1', true);
         dependency.on('lib', function(deps, callback) { stateCallback.call(this, deps, callback); });
         this.m = new AwesomeModule('module1', {
-          lib: function(modules, callback) { steps.push('module1:lib'); callback(null, {itisthelib: true}); }
+          states: {
+            lib: function(modules, callback) { steps.push('module1:lib'); callback(null, {itisthelib: true}); }
+          }
         });
         this.m2 = new AwesomeModule('module2', {
-          lib: function(modules, callback) { steps.push('module2:lib'); callback(null, {itisthelib2: true}); },
+          states: {
+            lib: function(modules, callback) { steps.push('module2:lib'); callback(null, {itisthelib2: true}); }
+          },
           dependencies: [dependency]
         });
       });
@@ -647,11 +701,15 @@ describe('The AwesomeModuleStateManager module', function() {
         var dependency = new AwesomeModuleDependency(AwesomeModuleDependency.TYPE_ABILITY, 'esn.ability1', 'ability1', true);
         dependency.on('lib', function(deps, callback) { stateCallback.call(this, deps, callback); });
         this.m = new AwesomeModule('module1', {
-          lib: function(modules, callback) { steps.push('module1:lib'); callback(null, {itisthelib: true}); },
+          states: {
+            lib: function(modules, callback) { steps.push('module1:lib'); callback(null, {itisthelib: true}); }
+          },
           abilities: ['esn.ability1']
         });
         this.m2 = new AwesomeModule('module2', {
-          lib: function(modules, callback) { steps.push('module2:lib'); callback(null, {itisthelib2: true}); },
+          states: {
+            lib: function(modules, callback) { steps.push('module2:lib'); callback(null, {itisthelib2: true}); }
+          },
           dependencies: [dependency]
         });
       });

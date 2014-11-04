@@ -36,23 +36,25 @@ manager.registerState('datastore_connect', ['lib']);
 
 //create a module
 var mongoModule = new AwesomeModule('datastore.mongo', {
-  // the "lib" state is always defined: it is where your module should
-  // expose its API: it's the equivalent of var lib = require('themodule');
-  lib: function(dependencies, callback) {
-    var api = { connected: false };
-    return callback(null, api);
-  },
-  datastore_connect: function(dependencies, callback) {
-    // "this" is the api object returned in the lib state
-    var self = this;
-    mongo.MongoClient.connect(
-      "mongodb://localhost:27017/integration_tests",
-      function(err, db) {
-        if ( err ) { return callback(err); }
-        self.db = db;
-        self.connected = true;
-        callback();
-    });
+  states: {
+    // the "lib" state is always defined: it is where your module should
+    // expose its API: it's the equivalent of var lib = require('themodule');
+    lib: function(dependencies, callback) {
+      var api = { connected: false };
+      return callback(null, api);
+    },
+    datastore_connect: function(dependencies, callback) {
+      // "this" is the api object returned in the lib state
+      var self = this;
+      mongo.MongoClient.connect(
+        "mongodb://localhost:27017/integration_tests",
+        function(err, db) {
+          if ( err ) { return callback(err); }
+          self.db = db;
+          self.connected = true;
+          callback();
+      });
+    }
   }
 });
 
@@ -77,9 +79,11 @@ manager.registerState('datastore_connect', ['lib']);
 
 // create the configuration module
 var configModule = new AwesomeModule('basic.config', {
-  lib: function(dependencies, callback) {
-    var api = require('../../config.json');
-    return callback(null, api);
+  states: {
+    lib: function(dependencies, callback) {
+      var api = require('../../config.json');
+      return callback(null, api);
+    }
   }
 });
 
@@ -89,22 +93,24 @@ var mongoModule = new AwesomeModule('datastore.mongo', {
     // and we want it aliased as "conf"
     new Dependency(Dependency.TYPE_NAME, 'basic.config', 'conf')
   ],
-  lib: function(dependencies, callback) {
-    var api = { connected: false };
-    return callback(null, api);
-  },
-  datastore_connect: function(dependencies, callback) {
-    var self = this;
-    // dependencies contains the dependencies we require
-    var config = dependencies('conf');
-    mongo.MongoClient.connect(
-      config.mongoUrl,
-      function(err, db) {
-        if ( err ) { return callback(err); }
-        self.db = db;
-        self.connected = true;
-        callback();
-    });
+  states: {
+    lib: function(dependencies, callback) {
+      var api = { connected: false };
+      return callback(null, api);
+    },
+    datastore_connect: function(dependencies, callback) {
+      var self = this;
+      // dependencies contains the dependencies we require
+      var config = dependencies('conf');
+      mongo.MongoClient.connect(
+        config.mongoUrl,
+        function(err, db) {
+          if ( err ) { return callback(err); }
+          self.db = db;
+          self.connected = true;
+          callback();
+      });
+    }
   }
 });
 
@@ -156,13 +162,15 @@ A module can sepcify that it wants a callback to be fired when a dependency is f
 ```javascript
 var AMD = AwesomeModule.AwesomeModuleDependency;
 var exampleModule = new AwesomeModule('example', {
-  lib: function(dependencies, callback) {
-    console.log('example module lib');
-    return callback(null, {foo: function(){}});
-  }
-  start: function(dependencies, callback) {
-    console.log('example module start');
-    return callback();
+  states: {
+    lib: function(dependencies, callback) {
+      console.log('example module lib');
+      return callback(null, {foo: function(){}});
+    }
+    start: function(dependencies, callback) {
+      console.log('example module start');
+      return callback();
+    }
   }
 });
 
@@ -173,13 +181,15 @@ dependency.on('start', function(deps, callback){
 });
 
 var dependentModule = new AwesomeModule('dependent', {
-  lib: function(dependencies, callback) {
-    console.log('dependent module lib')
-    return callback(null, {bar: function(){}});
-  },
-  start: function(dependencies, callback) {
-    console.log('dependent module start')
-    return callback();
+  states: {
+    lib: function(dependencies, callback) {
+      console.log('dependent module lib')
+      return callback(null, {bar: function(){}});
+    },
+    start: function(dependencies, callback) {
+      console.log('dependent module start')
+      return callback();
+    }
   },
   dependencies: [dependency]
 });
@@ -262,6 +272,9 @@ Here is the list of emitted events:
 
 | Event  | Associated data  | Description  |
 |---|---|---|
-|   |   |   |
-|   |   |   |
-|   |   |   |
+|  loader:loadstart | name: the module name, context: the module loading context  | fired when the manager starts the loading process for a module |
+| loader: loaderror  | name: the module name, module: the module object, context: the module loading context, error: the error  |  fired when the manager encountered an error while trying to load a module |
+| loader:loaded  | name: the module name, module: the module object, context: the module loading context  | fired when a module finished loading successfully  |
+| state:fire  | state: the state name, module: the module object | fired when launching a certain state on a module  |
+| state:fulfilled  | state: the state name, module: the module object | fired when a certain state has been successfully reached on a module  |
+| state:failed  | state: the state name, module: the module object, error: the error object | fired when a certain state failed to complete, either because of a direct error thrown, or because the module returns an error object |
