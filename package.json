@@ -1,6 +1,6 @@
 {
   "name": "awesome-module-manager",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "A module manager for large node applications",
   "main": "index.js",
   "directories": {
@@ -21,10 +21,10 @@
     "q": "^1.0.1"
   },
   "peerDependencies": {
-    "awesome-module": "0.1.0"
+    "awesome-module": "1.0.0"
   },
   "devDependencies": {
-    "awesome-module": "0.1.0",
+    "awesome-module": "1.0.0",
     "grunt-mocha-cli": "^1.10.0",
     "mocha": "^1.21.4"
   },
