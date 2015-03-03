@@ -86,7 +86,6 @@ describe('The ModuleLoaderCollection object', function() {
       var mlc = this.setupFsLoader();
       var loaded = [];
       function onModule(name) {
-        console.log('on module ! ', name);
         loaded.push(name);
       }
       mlc.loadModuleAndDependencies('module15', onModule).then(function(mod) {
@@ -101,7 +100,6 @@ describe('The ModuleLoaderCollection object', function() {
       var mlc = this.setupFsLoader();
       var loaded = [];
       function onModule(name) {
-        console.log('on module ! ', name);
         loaded.push(name);
       }
       mlc.loadModuleAndDependencies('module17', onModule).then(function(mod) {
@@ -118,7 +116,6 @@ describe('The ModuleLoaderCollection object', function() {
       var mlc = this.setupFsLoader();
       var loaded = [];
       function onModule(name) {
-        console.log('on module ! ', name);
         loaded.push(name);
       }
       mlc.loadModuleAndDependencies('module18', onModule).then(function(mod) {
