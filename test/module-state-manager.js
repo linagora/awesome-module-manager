@@ -839,7 +839,7 @@ describe('The AwesomeModuleStateManager module', function() {
     describe('dependencies by ability', function() {
       beforeEach(function() {
         var steps = this.steps = [];
-        var stateCallback = function(deps, callback) { console.log('callback called'); steps.push('module2:callback'); callback(); };
+        var stateCallback = function(deps, callback) { steps.push('module2:callback'); callback(); };
         this.setStateCallback = function(cb) { stateCallback = cb; };
         var AwesomeModule = require('awesome-module'),
         AwesomeModuleDependency = AwesomeModule.AwesomeModuleDependency;
