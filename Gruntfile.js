@@ -40,11 +40,17 @@ module.exports = function(grunt) {
         reporter: 'spec'
       },
       all: ['test/*.js']
+    },
+    release: {
+      options: {
+        tagName: 'v<%= version %>'
+      }
     }
   });
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-gjslint');
   grunt.loadNpmTasks('grunt-mocha-cli');
+  grunt.loadNpmTasks('grunt-release');
 
   grunt.registerTask('linters', ['jshint', 'gjslint']);
   grunt.registerTask('mocha', ['mochacli']);
