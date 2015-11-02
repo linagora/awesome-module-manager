@@ -303,6 +303,32 @@ var fsLoader2 = mm.loaders.filesystem('/my/modules', true);
 mm.registerLoader(fsLoader2);
 ```
 
+### Creating your own loader
+
+It's kind of easy to create your own awesome module loader. You have to provide a function that takes as arguments a module name, and a callback. This function tries to load the module, and then fires the callback, either with the module, or with nothing. Here is an example for a "require" loader:
+
+```javascript
+function load(modName, callback) {
+  var mod;
+  try {
+    mod = require(modName);
+  } catch(e) {
+    // not finding a module through a loader is not to be considered as an error
+    // the function will just call the callback with an empty "mod" argument
+  }
+  return callback(null, mod);
+}
+```
+
+You then create an AwesomeModuleLoader instance, passing the loader name, the loading function, and whether thtis loader is a trusted one.
+
+```javascript
+var AwesomeModuleManager = require('awesome-module-manager');
+var requireloader = new AwesomeModuleManager.AwesomeModuleLoader('requireLoader', load, true);
+mm = new AwesomeModuleManager();
+mm.appendLoader(requireloader);
+```
+
 
 ## Module API proxy
 
