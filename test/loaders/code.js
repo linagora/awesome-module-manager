@@ -6,7 +6,7 @@ var expect = require('chai').expect;
 
 describe('The code loader module', function() {
   it('should register an AwesomeModule', function() {
-    var AwesomeModule = require(libPath + '/module');
+    var AwesomeModule = require('awesome-module');
     var m = new AwesomeModule('test', {});
     var codeLoader = require(libPath + '/loaders/code');
     var loader = codeLoader(m);
@@ -14,7 +14,7 @@ describe('The code loader module', function() {
   });
 
   it('should return the AwesomeModule if the name matches', function(done) {
-    var AwesomeModule = require(libPath + '/module');
+    var AwesomeModule = require('awesome-module');
     var m = new AwesomeModule('test', {});
     var codeLoader = require(libPath + '/loaders/code');
     var loader = codeLoader(m);
@@ -27,7 +27,7 @@ describe('The code loader module', function() {
   });
 
   it('should not return the AwesomeModule if the name does not matches', function(done) {
-    var AwesomeModule = require(libPath + '/module');
+    var AwesomeModule = require('awesome-module');
     var m = new AwesomeModule('test', {});
     var codeLoader = require(libPath + '/loaders/code');
     var loader = codeLoader(m);

@@ -1,5 +1,9 @@
 'use strict';
 
+var path = require('path');
+
+var fixtures = path.normalize(__dirname + '/test/fixtures');
+
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -37,9 +41,12 @@ module.exports = function(grunt) {
     },
     mochacli: {
       options: {
-        reporter: 'spec'
+        reporter: 'spec',
+        env: {
+          NODE_PATH: fixtures
+        }
       },
-      all: ['test/*.js']
+      all: ['test/*.js', 'test/loaders/*.js']
     },
     release: {
       options: {

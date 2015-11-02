@@ -5,7 +5,7 @@ var rootPath = require('path').join(__dirname, '../..'),
     libPath = rootPath + '/lib';
 var expect = require('chai').expect;
 
-describe('The code loader module', function() {
+describe('The filesystem loader module', function() {
   it('should register an AwesomeModule', function() {
     var fsLoader = require(libPath + '/loaders/filesystem');
     var loader = fsLoader(fixturesPath);
