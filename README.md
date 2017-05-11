@@ -163,7 +163,7 @@ var otherModule = new AwesomeModule('other.name', {
 
 ### Dependency callback
 
-A module can sepcify that it wants a callback to be fired when a dependency is fulfilled and both the module and its dependency reach a certain state.
+A module can specify that it wants a callback to be fired when a dependency is fulfilled and both the module and its dependency reach a certain state.
 
 ```javascript
 var AMD = AwesomeModule.AwesomeModuleDependency;
