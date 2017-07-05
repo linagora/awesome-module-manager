@@ -247,6 +247,32 @@ describe('The ModuleLoaderCollection object', function() {
 
   });
 
+  describe('loaded module', function() {
+    describe('getData() method', function() {
+      it('should enable access to data', function(done) {
+        var mlc = this.setupFsLoader();
+        mlc.loadModuleAndDependencies('module19').then(function() {
+          var mod = mlc.store.get('module19');
 
+          expect(mod.getData()).to.deep.equal({someExposedData: true});
 
+          done();
+        },done);
+      });
+
+      it('should not send a reference of inner data', function(done) {
+        var mlc = this.setupFsLoader();
+        mlc.loadModuleAndDependencies('module19').then(function() {
+          var mod = mlc.store.get('module19');
+          var data = mod.getData();
+          data.newThing = true;
+
+          expect(mod.getData()).to.deep.equal({someExposedData: true});
+
+          done();
+        },done);
+      });
+
+    });
+  });
 });
