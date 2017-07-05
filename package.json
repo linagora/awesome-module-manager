@@ -8,16 +8,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://ci.open-paas.org/stash/scm/am/awesome-module-manager.git"
+    "url": "https://ci.linagora.com/linagora/lgs/openpaas/awesome-module-manager.git"
   },
   "dependencies": {
     "q": "^1.0.1"
   },
   "peerDependencies": {
-    "awesome-module": "1.0.0"
+    "awesome-module": "1.1.0"
   },
   "devDependencies": {
-    "awesome-module": "1.0.0",
+    "awesome-module": "1.1.0",
     "chai": "^1.9.1",
     "closure-linter-wrapper": "^0.2.9",
     "grunt": "^0.4.5",
