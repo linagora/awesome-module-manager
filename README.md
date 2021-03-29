@@ -1,3 +1,5 @@
+![Archived](https://img.shields.io/badge/Current_Status-archived-blue?style=flat)
+
 # Awesome Module Manager
 
 This is a way to help achieve modularity in large NodeJS applications.
